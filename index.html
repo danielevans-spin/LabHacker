@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<!-- This tells the browser: "Hey, this is an HTML5 document!" -->
+
+<html lang="en">
+  <!-- The root element. lang="en" helps screen readers and search engines -->
+
+  <head>
+    <!-- HEAD section: Information ABOUT the page (not visible to users) -->
+
+    <meta charset="UTF-8" />
+    <!-- Character encoding - allows special characters like é, ñ, etc. -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Makes the site responsive on mobile devices -->
+
+    <title>LabHacker - Science Lab Tools</title>
+    <!-- Text that appears in browser tab -->
+
+    <link rel="stylesheet" href="css/style.css" />
+    <!-- Links to our CSS file. "rel" means relationship, "href" is the path -->
+  </head>
+
+  <body>
+    <!-- BODY section: Everything users actually SEE on the page -->
+
+    <!-- NAVIGATION BAR -->
+    <nav class="navbar">
+      <!-- nav = navigation element, class gives it a name for CSS styling -->
+
+      <div class="nav-content">
+        <!-- div = generic container (like a box) -->
+
+        <h1 class="logo">LabHacker.ai</h1>
+        <!-- h1 = main heading (biggest text) -->
+
+        <div class="nav-tabs">
+          <!-- This is where category tabs will go in the future -->
+          <span class="tab">All</span>
+          <!-- For now, just one tab. span = inline text element -->
+          <!-- Later we'll add: Physics, Chemistry, Biology, etc. -->
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="container">
+      <!-- main = primary content of the page -->
+
+      <div class="tools-grid">
+        <!-- This grid will hold all our tool tiles -->
+        <!-- Right now: just one tile. Future: many tiles! -->
+
+        <!-- TOOL TILE #1: Pendulum G Calculator -->
+        <a href="pendulum-hub.html" class="tool-tile">
+          <!-- a = link/anchor. When clicked, goes to pendulum.html -->
+          <!-- We style it to look like a tile, not a typical blue underlined link -->
+
+          <div class="tile-icon">📊</div>
+          <!-- Emoji icon - simple and friendly! -->
+
+          <h2 class="tile-title">Pendulum Lab</h2>
+          <!-- h2 = second-level heading (smaller than h1) -->
+
+          <p class="tile-description">
+            <!-- p = paragraph -->
+            Calculate period and acceleration from pendulum data
+          </p>
+
+          <span class="tile-category">Physics</span>
+          <!-- Label showing which category this belongs to -->
+        </a>
+
+        <!-- FUTURE TILES WILL GO HERE -->
+        <!-- Just copy-paste this tile structure and change the content! -->
+      </div>
+    </main>
+
+    <!-- FOOTER (optional - we can add this later) -->
+  </body>
+</html>

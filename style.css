@@ -1,0 +1,769 @@
+/* ========================================
+   GLOBAL STYLES
+   These apply to the entire website
+   ======================================== */
+
+/* Reset default browser styling to start clean */
+* {
+  margin: 0; /* Remove default spacing outside elements */
+  padding: 0; /* Remove default spacing inside elements */
+  box-sizing: border-box; /* Makes width/height calculations easier */
+}
+
+/* Base styling for the entire page */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* ^ Uses system fonts - looks native on Mac/Windows */
+
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  /* Beautiful purple gradient background */
+
+  min-height: 100vh; /* At least full viewport height */
+  color: #333; /* Dark gray text (easier on eyes than pure black) */
+}
+
+/* ========================================
+   NAVIGATION BAR
+   ======================================== */
+
+.navbar {
+  background: white;
+  padding: 1.5rem 2rem; /* 1.5rem top/bottom, 2rem left/right */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  /* Box shadow: horizontal, vertical, blur, color */
+}
+
+.nav-content {
+  max-width: 1200px; /* Don't let content get too wide on big screens */
+  margin: 0 auto; /* Center the content */
+  display: flex; /* Use flexbox layout */
+  justify-content: space-between; /* Space between logo and tabs */
+  align-items: center; /* Vertically center items */
+}
+
+.logo {
+  font-size: 1.8rem; /* rem = relative to root font size */
+  font-weight: 700; /* Bold */
+  color: #667eea; /* Purple to match gradient */
+  margin: 0; /* Remove default margin */
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 1rem; /* Space between tabs */
+}
+
+.tab {
+  padding: 0.5rem 1rem;
+  background: #f0f0f0; /* Light gray background */
+  border-radius: 20px; /* Rounded corners - "pill" shape */
+  font-size: 0.9rem;
+  color: #666;
+  cursor: pointer; /* Show hand cursor on hover */
+  transition: all 0.3s; /* Smooth transition for hover effects */
+}
+
+.tab:hover {
+  background: #667eea; /* Purple on hover */
+  color: white;
+  transform: translateY(-2px); /* Lift up slightly */
+}
+
+/* ========================================
+   MAIN CONTAINER
+   ======================================== */
+
+.container {
+  max-width: 1200px;
+  margin: 3rem auto; /* 3rem top/bottom, auto centers left/right */
+  padding: 0 2rem; /* Side padding for mobile screens */
+}
+
+/* ========================================
+   TOOLS GRID (holds all the tiles)
+   ======================================== */
+
+.tools-grid {
+  display: grid; /* Use CSS Grid layout */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  /* ^ Creates columns that are at least 280px wide */
+  /* auto-fill = create as many columns as fit */
+  /* 1fr = one fraction of available space */
+
+  gap: 2rem; /* Space between tiles */
+  margin-top: 2rem;
+}
+
+/* ========================================
+   INDIVIDUAL TOOL TILE
+   ======================================== */
+
+.tool-tile {
+  background: white;
+  padding: 2rem;
+  border-radius: 20px; /* Rounded corners - your "round rectangular" request! */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  text-decoration: none; /* Remove underline from link */
+  color: inherit; /* Use body text color */
+  display: block; /* Make entire tile clickable */
+  transition: all 0.3s ease; /* Smooth animation */
+  cursor: pointer;
+}
+
+/* Hover effect - tile lifts and shadow increases */
+.tool-tile:hover {
+  transform: translateY(-8px); /* Move up 8 pixels */
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15); /* Bigger shadow */
+}
+
+.tile-icon {
+  font-size: 3rem; /* Big emoji */
+  margin-bottom: 1rem;
+}
+
+.tile-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.tile-description {
+  color: #666; /* Gray text */
+  font-size: 0.95rem;
+  line-height: 1.5; /* Space between lines for readability */
+  margin-bottom: 1rem;
+}
+
+.tile-category {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: #e3f2fd; /* Pale blue - your "pale colored" request! */
+  color: #1976d2; /* Darker blue text */
+  border-radius: 12px; /* Rounded */
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   Media queries adjust layout for different screen sizes
+   ======================================== */
+
+/* Tablets */
+@media (max-width: 768px) {
+  .tools-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .container {
+    padding: 0 1rem;
+  }
+}
+
+/* Mobile phones */
+@media (max-width: 480px) {
+  .nav-content {
+    flex-direction: column; /* Stack logo and tabs vertically */
+    gap: 1rem;
+  }
+
+  .logo {
+    font-size: 1.5rem;
+  }
+
+  .tools-grid {
+    grid-template-columns: 1fr; /* Single column on mobile */
+  }
+}
+/* ========================================
+   CALCULATOR PAGE STYLES
+   These styles are specific to pendulum.html
+   ======================================== */
+
+/* Page header styling */
+.page-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: white;
+}
+
+.page-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.page-header p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+/* Tool card - white rounded containers (your tile design!) */
+.tool-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+/* Instructions text */
+.instructions {
+  color: #666;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+/* ========================================
+   INPUT FORM STYLES
+   ======================================== */
+
+.input-row {
+  display: flex;
+  gap: 1rem; /* Space between elements */
+  margin-bottom: 2rem;
+  flex-wrap: wrap; /* Wrap on small screens */
+  align-items: flex-end; /* Align to bottom (buttons line up with inputs) */
+}
+
+.input-group {
+  flex: 1; /* Each input takes equal space */
+  min-width: 150px; /* Don't get too narrow */
+}
+
+.input-group label {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+/* When user clicks in input field */
+.input-group input:focus {
+  outline: none; /* Remove default browser outline */
+  border-color: #667eea; /* Purple border */
+}
+
+/* ========================================
+   BUTTON STYLES
+   ======================================== */
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px); /* Lift up */
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* Disabled state - when button can't be clicked */
+.btn-primary:disabled {
+  background: #ccc;
+  cursor: not-allowed; /* Shows "no entry" cursor */
+  box-shadow: none;
+}
+
+.btn-secondary {
+  background: white;
+  color: #666;
+  border: 2px solid #e0e0e0;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.button-group {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* ========================================
+   DATA TABLE STYLES
+   ======================================== */
+
+.data-table-container {
+  overflow-x: auto; /* Allows horizontal scrolling on small screens */
+  margin-bottom: 1.5rem;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse; /* No gaps between cells */
+}
+
+.data-table thead {
+  background: #f8f9fa; /* Light gray header */
+}
+
+.data-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.data-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* Alternating row colors for readability */
+.data-table tbody tr:nth-child(even) {
+  background: #fafafa;
+}
+
+.data-table tbody tr:hover {
+  background: #f0f0ff; /* Highlight on hover */
+}
+
+/* Empty state message */
+.empty-state td {
+  text-align: center;
+  color: #999;
+  padding: 2rem !important; /* !important overrides other padding rules */
+  font-style: italic;
+}
+
+/* Delete button in table */
+.btn-delete {
+  background: #ff4444;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-delete:hover {
+  background: #cc0000;
+}
+
+/* ========================================
+   CHART/GRAPH STYLES
+   ======================================== */
+
+.chart-container {
+  position: relative;
+  height: 400px; /* Fixed height for chart */
+  margin-top: 1rem;
+}
+
+/* Make chart responsive */
+.chart-container canvas {
+  max-width: 100%;
+  height: auto !important;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN FOR CALCULATOR
+   ======================================== */
+
+@media (max-width: 768px) {
+  .input-row {
+    flex-direction: column;
+  }
+
+  .input-group {
+    width: 100%;
+  }
+
+  .page-header h1 {
+    font-size: 2rem;
+  }
+
+  .tool-card {
+    padding: 1.5rem;
+  }
+}
+/* ========================================
+   PHASE 2A: ENHANCED INPUT STYLES
+   ======================================== */
+
+/* Instructions list styling */
+.instructions ol {
+  margin-left: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.instructions li {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+/* Input section container */
+.input-section {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+/* Input with unit dropdown/label */
+.input-with-unit {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.input-with-unit input {
+  flex: 1; /* Input takes most space */
+}
+
+/* Unit dropdown styling */
+.unit-dropdown {
+  padding: 0.75rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 1rem;
+  background: white;
+  cursor: pointer;
+  min-width: 100px;
+  transition: border-color 0.3s;
+}
+
+.unit-dropdown:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+/* Static unit label (for "seconds") */
+.unit-label {
+  padding: 0.75rem 1rem;
+  background: #e0e0e0;
+  border-radius: 10px;
+  font-size: 1rem;
+  color: #666;
+  display: flex;
+  align-items: center;
+  min-width: 80px;
+  justify-content: center;
+}
+
+/* Oscillations dropdown */
+.oscillations-dropdown {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 1rem;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.3s;
+}
+
+.oscillations-dropdown:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+/* Input hints (small text below inputs) */
+.input-hint {
+  display: block;
+  margin-top: 0.25rem;
+  color: #999;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+/* Period preview box */
+.period-preview {
+  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+  padding: 1rem;
+  border-radius: 10px;
+  margin: 1rem 0;
+  border-left: 4px solid #667eea;
+}
+
+.preview-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.preview-label {
+  font-weight: 600;
+  color: #333;
+}
+
+.preview-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.preview-unit {
+  color: #666;
+}
+
+/* ========================================
+   ENHANCED TABLE STYLES
+   ======================================== */
+
+.data-table th,
+.data-table td {
+  padding: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.data-table thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.data-table th {
+  font-weight: 600;
+  border-bottom: none;
+}
+
+/* ========================================
+   RESULTS DISPLAY STYLES
+   ======================================== */
+
+/* Results box for regression info */
+.results-box {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-top: 1.5rem;
+}
+
+.results-box h4 {
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.results-box p {
+  margin: 0.5rem 0;
+  line-height: 1.6;
+}
+
+.results-box strong {
+  color: #667eea;
+}
+
+/* Results grid (for summary cards) */
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.result-card {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e3f2fd 100%);
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+  border: 2px solid #e0e0e0;
+  transition: transform 0.3s;
+}
+
+.result-card:hover {
+  transform: translateY(-4px);
+  border-color: #667eea;
+}
+
+.result-label {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.result-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #667eea;
+  margin: 0.5rem 0;
+}
+
+.result-unit {
+  font-size: 1rem;
+  color: #666;
+}
+
+/* Quality assessment message */
+.quality-assessment {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border-left: 4px solid #4caf50;
+  margin-top: 1.5rem;
+}
+
+.quality-assessment.excellent {
+  border-left-color: #4caf50;
+  background: #e8f5e9;
+}
+
+.quality-assessment.good {
+  border-left-color: #ff9800;
+  background: #fff3e0;
+}
+
+.quality-assessment.needs-improvement {
+  border-left-color: #f44336;
+  background: #ffebee;
+}
+
+.quality-assessment h3 {
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+/* ========================================
+   RESPONSIVE ADJUSTMENTS
+   ======================================== */
+
+@media (max-width: 768px) {
+  .input-with-unit {
+    flex-direction: column;
+  }
+
+  .unit-dropdown,
+  .unit-label {
+    width: 100%;
+  }
+
+  .results-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* ========================================
+   HUB PAGE ENHANCEMENTS
+   Metadata, difficulty, and coming soon styles
+   ======================================== */
+
+/* Tile metadata (difficulty, time) */
+.tile-meta {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+  flex-wrap: wrap;
+}
+
+.tile-difficulty,
+.tile-time {
+  font-size: 0.85rem;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Coming soon badge */
+.tile-badge-coming-soon {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: #ff9800;
+  color: white;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Coming soon tile styling */
+.tool-tile.coming-soon {
+  opacity: 0.6;
+  cursor: not-allowed;
+  position: relative;
+}
+
+.tool-tile.coming-soon:hover {
+  transform: none; /* Disable hover lift */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Keep original shadow */
+}
+
+.tool-tile.coming-soon::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  pointer-events: none;
+}
+
+/* Ensure tile category stays visible on coming soon tiles */
+.tool-tile.coming-soon .tile-category {
+  position: relative;
+  z-index: 1;
+}
+/* ========================================
+   BREADCRUMB NAVIGATION
+   ======================================== */
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.breadcrumb a {
+  color: white;
+  text-decoration: none;
+  opacity: 0.8;
+  transition: opacity 0.3s;
+}
+
+.breadcrumb a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.breadcrumb-separator {
+  color: white;
+  opacity: 0.6;
+}
+
+.breadcrumb-current {
+  color: white;
+  font-weight: 600;
+}

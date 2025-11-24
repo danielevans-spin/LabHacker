@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pendulum Lab - Measure g - LabHacker</title>
+
+    <link rel="stylesheet" href="css/style.css" />
+
+    <!-- Chart.js Library for graphing -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+  </head>
+
+  <body>
+    <!-- NAVIGATION BAR -->
+    <nav class="navbar">
+      <div class="nav-content">
+        <a href="index.html" style="text-decoration: none">
+          <h1 class="logo">LabHacker.ai</h1>
+        </a>
+
+        <div class="nav-tabs">
+          <span class="tab">Physics</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="container">
+      <!-- PAGE HEADER -->
+      <!-- BREADCRUMB NAVIGATION -->
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="breadcrumb-separator">›</span>
+        <a href="pendulum-hub.html">Pendulum Experiments</a>
+        <span class="breadcrumb-separator">›</span>
+        <span class="breadcrumb-current">Measure g</span>
+      </div>
+
+      <!-- PAGE HEADER -->
+      <div class="page-header">
+        <h1>📊 Pendulum Lab - Measure g</h1>
+        <p>
+          Experimentally determine the acceleration due to gravity using
+          pendulum period measurements
+        </p>
+      </div>
+
+      <!-- ===================================
+             INPUT SECTION
+             =================================== -->
+      <div class="tool-card">
+        <h2 class="card-title">📝 Data Entry</h2>
+
+        <!-- Instructions -->
+        <div class="instructions">
+          <p><strong>Instructions:</strong></p>
+          <ol>
+            <li>
+              Measure the length of your pendulum (pivot point to center of bob)
+            </li>
+            <li>Pull the bob to a small angle (&lt;15°) and release</li>
+            <li>Time multiple complete oscillations (swings back and forth)</li>
+            <li>Enter your measurements below and click "Add Data Point"</li>
+            <li>Repeat for at least 5 different lengths for best results</li>
+          </ol>
+        </div>
+
+        <!-- INPUT FORM -->
+        <div class="input-section">
+          <!-- LENGTH INPUT WITH UNIT DROPDOWN -->
+          <div class="input-row">
+            <div class="input-group">
+              <label for="lengthInput">📏 Pendulum Length</label>
+              <div class="input-with-unit">
+                <!-- Length number input -->
+                <input
+                  type="number"
+                  id="lengthInput"
+                  placeholder="e.g., 50.0"
+                  step="0.1"
+                  min="0"
+                />
+                <!-- Unit dropdown -->
+                <select id="lengthUnit" class="unit-dropdown">
+                  <option value="cm">cm</option>
+                  <option value="in">inches</option>
+                </select>
+              </div>
+              <small class="input-hint"
+                >Measure from pivot to center of bob</small
+              >
+            </div>
+          </div>
+
+          <!-- TIME AND OSCILLATIONS -->
+          <div class="input-row">
+            <div class="input-group">
+              <label for="timeInput">⏱️ Time Measured</label>
+              <div class="input-with-unit">
+                <input
+                  type="number"
+                  id="timeInput"
+                  placeholder="e.g., 28.4"
+                  step="0.1"
+                  min="0"
+                />
+                <span class="unit-label">seconds</span>
+              </div>
+              <small class="input-hint">Total time for all oscillations</small>
+            </div>
+
+            <div class="input-group">
+              <label for="oscillationsInput">🔁 Number of Oscillations</label>
+              <select id="oscillationsInput" class="oscillations-dropdown">
+                <option value="10">10 oscillations</option>
+                <option value="20" selected>20 oscillations</option>
+                <option value="30">30 oscillations</option>
+                <option value="50">50 oscillations</option>
+              </select>
+              <small class="input-hint"
+                >How many complete swings you timed</small
+              >
+            </div>
+          </div>
+
+          <!-- CALCULATED PERIOD PREVIEW -->
+          <div class="period-preview" id="periodPreview" style="display: none">
+            <div class="preview-content">
+              <span class="preview-label">Calculated Period (T):</span>
+              <span class="preview-value" id="periodValue">--</span>
+              <span class="preview-unit">seconds</span>
+            </div>
+          </div>
+
+          <!-- ACTION BUTTONS -->
+          <div class="button-group">
+            <button id="addDataBtn" class="btn-primary">
+              ➕ Add Data Point
+            </button>
+            <button id="clearDataBtn" class="btn-secondary">
+              🗑️ Clear All Data
+            </button>
+          </div>
+        </div>
+
+        <!-- DATA TABLE -->
+        <div class="data-table-container">
+          <h3>📋 Your Measurements</h3>
+          <table id="dataTable" class="data-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Length</th>
+                <th>Time (s)</th>
+                <th>Oscillations</th>
+                <th>Period T (s)</th>
+                <th>T² (s²)</th>
+                <th>g (m/s²)</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="dataTableBody">
+              <tr class="empty-state">
+                <td colspan="8">
+                  No data yet. Add your first measurement above! 👆
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- GENERATE GRAPH BUTTON -->
+        <div class="button-group" style="margin-top: 1.5rem">
+          <button id="generateGraphBtn" class="btn-primary" disabled>
+            📈 Generate T² vs L Graph
+          </button>
+        </div>
+      </div>
+
+      <!-- ===================================
+             RESULTS SECTION
+             =================================== -->
+
+      <!-- GRAPH SECTION -->
+      <div id="graphSection" class="tool-card" style="display: none">
+        <h2 class="card-title">📉 T² vs L Graph</h2>
+        <p class="instructions">
+          This graph plots T² (period squared) vs Length. According to physics,
+          this should be a straight line passing through the origin. The slope
+          equals 4π²/g, which lets us calculate g!
+        </p>
+
+        <div class="chart-container">
+          <canvas id="dataChart"></canvas>
+        </div>
+
+        <!-- Linear Regression Results -->
+        <div id="regressionResults" class="results-box">
+          <!-- JavaScript will populate this -->
+        </div>
+      </div>
+
+      <!-- SUMMARY RESULTS SECTION -->
+      <div id="summarySection" class="tool-card" style="display: none">
+        <h2 class="card-title">📊 Results Summary</h2>
+
+        <div class="results-grid">
+          <div class="result-card">
+            <div class="result-label">Average g (from individual trials)</div>
+            <div class="result-value" id="avgG">--</div>
+            <div class="result-unit">m/s²</div>
+          </div>
+
+          <div class="result-card">
+            <div class="result-label">Standard Deviation</div>
+            <div class="result-value" id="stdDev">--</div>
+            <div class="result-unit">m/s²</div>
+          </div>
+
+          <div class="result-card">
+            <div class="result-label">g from Graph Slope</div>
+            <div class="result-value" id="gFromSlope">--</div>
+            <div class="result-unit">m/s²</div>
+          </div>
+
+          <div class="result-card">
+            <div class="result-label">Percent Error</div>
+            <div class="result-value" id="percentError">--</div>
+            <div class="result-unit">%</div>
+          </div>
+        </div>
+
+        <div class="quality-assessment" id="qualityAssessment">
+          <!-- JavaScript will add quality message here -->
+        </div>
+      </div>
+    </main>
+
+    <!-- Link to JavaScript -->
+    <script src="js/pendulum.js"></script>
+  </body>
+</html>
