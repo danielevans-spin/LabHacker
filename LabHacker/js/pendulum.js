@@ -6,17 +6,18 @@
 // GLOBAL VARIABLES
 let dataPoints = []; // Stores all measurements
 let myChart = null; // Chart.js object
+let isEditMode = false; // Track if we're in edit mode
+let graphGenerated = false; // Track if graph has been generated
 
 // ========================================
 // GET REFERENCES TO HTML ELEMENTS
 // ========================================
 
-const lengthInput = document.getElementById("lengthInput");
+// Data entry elements
+const lengthColumnInput = document.getElementById("lengthColumnInput");
+const timeColumnInput = document.getElementById("timeColumnInput");
 const lengthUnit = document.getElementById("lengthUnit");
-const timeInput = document.getElementById("timeInput");
 const oscillationsInput = document.getElementById("oscillationsInput");
-const periodPreview = document.getElementById("periodPreview");
-const periodValue = document.getElementById("periodValue");
 
 const addDataBtn = document.getElementById("addDataBtn");
 const generateGraphBtn = document.getElementById("generateGraphBtn");
@@ -25,27 +26,43 @@ const clearDataBtn = document.getElementById("clearDataBtn");
 const dataTableBody = document.getElementById("dataTableBody");
 const graphSection = document.getElementById("graphSection");
 const summarySection = document.getElementById("summarySection");
+const copyableResultsSection = document.getElementById(
+  "copyableResultsSection"
+);
+const copyableResultsTableBody = document.getElementById(
+  "copyableResultsTableBody"
+);
+const copyResultsTableBtn = document.getElementById("copyResultsTableBtn");
+const copyGraphDataBtn = document.getElementById("copyGraphDataBtn");
+const downloadGraphBtn = document.getElementById("downloadGraphBtn");
+const copyStatus = document.getElementById("copyStatus");
+const copyGraphStatus = document.getElementById("copyGraphStatus");
+
+// Edit mode elements
+const editDataBtn = document.getElementById("editDataBtn");
+const editModeControls = document.getElementById("editModeControls");
+const editOscillationsInput = document.getElementById("editOscillationsInput");
+const editUnitInput = document.getElementById("editUnitInput");
+const saveEditBtn = document.getElementById("saveEditBtn");
+const cancelEditBtn = document.getElementById("cancelEditBtn");
 
 // ========================================
 // EVENT LISTENERS
 // ========================================
 
-addDataBtn.addEventListener("click", addDataPoint);
+addDataBtn.addEventListener("click", addDataPoints);
 generateGraphBtn.addEventListener("click", generateGraph);
 clearDataBtn.addEventListener("click", clearAllData);
 
-// Live period preview as user types
-lengthInput.addEventListener("input", updatePeriodPreview);
-timeInput.addEventListener("input", updatePeriodPreview);
-oscillationsInput.addEventListener("change", updatePeriodPreview);
+// Edit mode event listeners
+editDataBtn.addEventListener("click", enterEditMode);
+saveEditBtn.addEventListener("click", saveEditChanges);
+cancelEditBtn.addEventListener("click", cancelEditMode);
 
-// Enter key support
-lengthInput.addEventListener("keypress", (e) => {
-  if (e.key === "Enter") timeInput.focus();
-});
-timeInput.addEventListener("keypress", (e) => {
-  if (e.key === "Enter") addDataPoint();
-});
+// Copy results event listeners
+copyResultsTableBtn.addEventListener("click", copyResultsTable);
+copyGraphDataBtn.addEventListener("click", copyGraphData);
+downloadGraphBtn.addEventListener("click", downloadGraph);
 
 // ========================================
 // UTILITY FUNCTIONS
@@ -71,82 +88,124 @@ function formatNumber(num, decimals = 2) {
 }
 
 // ========================================
-// PERIOD PREVIEW (updates as user types)
+// ADD DATA POINTS
 // ========================================
-function updatePeriodPreview() {
-  const time = parseFloat(timeInput.value);
-  const oscillations = parseInt(oscillationsInput.value);
-
-  // Only show preview if both values are valid
-  if (!isNaN(time) && !isNaN(oscillations) && time > 0 && oscillations > 0) {
-    const period = time / oscillations;
-    periodValue.textContent = formatNumber(period, 3);
-    periodPreview.style.display = "block";
-  } else {
-    periodPreview.style.display = "none";
-  }
-}
-
-// ========================================
-// ADD DATA POINT
-// ========================================
-function addDataPoint() {
-  // Get input values
-  const length = parseFloat(lengthInput.value);
+function addDataPoints() {
+  // Get pasted data from textareas
+  const lengthText = lengthColumnInput.value.trim();
+  const timeText = timeColumnInput.value.trim();
   const unit = lengthUnit.value;
-  const time = parseFloat(timeInput.value);
   const oscillations = parseInt(oscillationsInput.value);
 
-  // VALIDATION
-  if (isNaN(length) || length <= 0) {
-    alert("Please enter a valid positive length!");
-    lengthInput.focus();
+  // Validate that both fields have data
+  if (!lengthText || !timeText) {
+    alert("Please enter or paste data into both length and time fields!");
     return;
   }
 
-  if (isNaN(time) || time <= 0) {
-    alert("Please enter a valid positive time!");
-    timeInput.focus();
+  // Parse the columns (split by newlines, filter empty lines, trim whitespace)
+  // This handles both single values and multiple values (one per line)
+  const lengthValues = lengthText
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .map((line) => parseFloat(line));
+
+  const timeValues = timeText
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .map((line) => parseFloat(line));
+
+  // Validate that we have the same number of values in both columns
+  if (lengthValues.length !== timeValues.length) {
+    alert(
+      `Error: Length column has ${lengthValues.length} values, but Time column has ${timeValues.length} values. They must match!`
+    );
     return;
   }
 
-  // CALCULATIONS
-  const lengthInMeters = convertToMeters(length, unit);
-  const period = time / oscillations;
-  const periodSquared = period * period;
+  // Validate that all values are valid numbers
+  const invalidLengths = lengthValues.filter((val) => isNaN(val) || val <= 0);
+  const invalidTimes = timeValues.filter((val) => isNaN(val) || val <= 0);
 
-  // Calculate g using formula: g = 4π²L / T²
-  const g = (4 * Math.PI * Math.PI * lengthInMeters) / periodSquared;
+  if (invalidLengths.length > 0 || invalidTimes.length > 0) {
+    alert(
+      "Error: Some values are invalid. Please check that all values are positive numbers."
+    );
+    return;
+  }
 
-  // Store the data point
-  dataPoints.push({
-    lengthValue: length,
-    lengthUnit: unit,
-    lengthMeters: lengthInMeters,
-    time: time,
-    oscillations: oscillations,
-    period: period,
-    periodSquared: periodSquared,
-    g: g,
-  });
+  if (lengthValues.length === 0) {
+    alert(
+      "No valid data found. Please enter or paste at least one value in each column."
+    );
+    return;
+  }
+
+  // Add all data points
+  let addedCount = 0;
+
+  for (let i = 0; i < lengthValues.length; i++) {
+    const length = lengthValues[i];
+    const time = timeValues[i];
+
+    // Convert length to meters
+    const lengthInMeters = convertToMeters(length, unit);
+    const period = time / oscillations;
+    const periodSquared = period * period;
+
+    // Calculate g using formula: g = 4π²L / T²
+    const g = (4 * Math.PI * Math.PI * lengthInMeters) / periodSquared;
+
+    // Store the data point
+    dataPoints.push({
+      lengthValue: length,
+      lengthUnit: unit,
+      lengthMeters: lengthInMeters,
+      time: time,
+      oscillations: oscillations,
+      period: period,
+      periodSquared: periodSquared,
+      g: g,
+    });
+
+    addedCount++;
+  }
 
   // Update display
   updateTable();
 
-  // Clear inputs for next entry
-  lengthInput.value = "";
-  timeInput.value = "";
-  periodPreview.style.display = "none";
+  // Clear textareas
+  lengthColumnInput.value = "";
+  timeColumnInput.value = "";
 
-  // Focus back on length for quick data entry
-  lengthInput.focus();
-
-  // Enable graph button if we have at least 3 points (minimum for good line)
-  if (dataPoints.length >= 3) {
+  // Enable graph button if we have at least 3 points
+  // But only if graph hasn't been generated yet (if it has, user needs to regenerate)
+  if (dataPoints.length >= 3 && !graphGenerated) {
     generateGraphBtn.disabled = false;
   }
 
-  console.log("Data point added:", dataPoints[dataPoints.length - 1]);
+  // If graph was generated and new data is added, re-enable graph buttons
+  if (graphGenerated) {
+    generateGraphBtn.disabled = false;
+    // Hide graph/results until regenerated
+    graphSection.style.display = "none";
+    summarySection.style.display = "none";
+    copyableResultsSection.style.display = "none";
+    if (myChart !== null) {
+      myChart.destroy();
+      myChart = null;
+    }
+    graphGenerated = false;
+  }
+
+  // Enable edit button if we have data (always enabled when we have data)
+  if (dataPoints.length > 0) {
+    editDataBtn.disabled = false;
+  }
+
+  console.log(`Data points added: ${addedCount} points`);
 }
 
 // ========================================
@@ -167,12 +226,55 @@ function updateTable() {
   dataPoints.forEach((point, index) => {
     const row = document.createElement("tr");
 
-    // Format length with unit for display
-    const lengthDisplay = `${formatNumber(point.lengthValue, 1)} ${
-      point.lengthUnit
-    }`;
+    if (isEditMode) {
+      // Edit mode: show input fields for length and time
+      const lengthDisplay = `${formatNumber(point.lengthValue, 1)} ${
+        point.lengthUnit
+      }`;
 
-    row.innerHTML = `
+      row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>
+                <div class="edit-input-group">
+                    <input type="number" 
+                           class="edit-input" 
+                           data-index="${index}" 
+                           data-field="length" 
+                           value="${point.lengthValue}" 
+                           step="0.1" 
+                           min="0">
+                    <span class="edit-unit">${point.lengthUnit}</span>
+                </div>
+            </td>
+            <td>
+                <div class="edit-input-group">
+                    <input type="number" 
+                           class="edit-input" 
+                           data-index="${index}" 
+                           data-field="time" 
+                           value="${point.time}" 
+                           step="0.1" 
+                           min="0">
+                    <span class="edit-unit">s</span>
+                </div>
+            </td>
+            <td>${point.oscillations}</td>
+            <td>${formatNumber(point.period, 3)}</td>
+            <td>${formatNumber(point.periodSquared, 3)}</td>
+            <td>${formatNumber(point.g, 2)}</td>
+            <td>
+                <button class="btn-delete" onclick="deleteDataPoint(${index})">
+                    🗑️
+                </button>
+            </td>
+        `;
+    } else {
+      // Normal mode: show formatted values
+      const lengthDisplay = `${formatNumber(point.lengthValue, 1)} ${
+        point.lengthUnit
+      }`;
+
+      row.innerHTML = `
             <td>${index + 1}</td>
             <td>${lengthDisplay}</td>
             <td>${formatNumber(point.time, 1)}</td>
@@ -186,6 +288,7 @@ function updateTable() {
                 </button>
             </td>
         `;
+    }
 
     dataTableBody.appendChild(row);
   });
@@ -202,15 +305,152 @@ function deleteDataPoint(index) {
     // Disable graph button if less than 3 points
     if (dataPoints.length < 3) {
       generateGraphBtn.disabled = true;
+      generateGraphBtn.disabled = true;
       graphSection.style.display = "none";
       summarySection.style.display = "none";
+      graphGenerated = false;
+      // Re-enable edit button if we have data
+      if (dataPoints.length > 0) {
+        editDataBtn.disabled = false;
+      }
     } else {
       // Regenerate graph if it was showing
       if (myChart !== null) {
         generateGraph();
       }
     }
+
+    // Update edit button state (always enabled if we have data)
+    if (dataPoints.length === 0) {
+      editDataBtn.disabled = true;
+    } else {
+      editDataBtn.disabled = false;
+    }
   }
+}
+
+// ========================================
+// EDIT MODE FUNCTIONS
+// ========================================
+function enterEditMode() {
+  if (dataPoints.length === 0) return;
+
+  isEditMode = true;
+  editModeControls.style.display = "block";
+  editDataBtn.disabled = true;
+  editDataBtn.textContent = "✏️ Editing...";
+
+  // Set the oscillations and unit dropdowns to the first data point's values (they should all be the same)
+  if (dataPoints.length > 0) {
+    editOscillationsInput.value = dataPoints[0].oscillations;
+    editUnitInput.value = dataPoints[0].lengthUnit;
+  }
+
+  updateTable();
+}
+
+function cancelEditMode() {
+  isEditMode = false;
+  editModeControls.style.display = "none";
+
+  // Re-enable edit button if graph hasn't been generated
+  if (!graphGenerated && dataPoints.length > 0) {
+    editDataBtn.disabled = false;
+  }
+  editDataBtn.textContent = "✏️ Edit Data";
+
+  updateTable();
+}
+
+function saveEditChanges() {
+  // Get all edited values
+  const editInputs = document.querySelectorAll(
+    '.edit-input[data-field="length"], .edit-input[data-field="time"]'
+  );
+  const newOscillations = parseInt(editOscillationsInput.value);
+  const newUnit = editUnitInput.value;
+
+  let hasChanges = false;
+
+  // Update each data point
+  editInputs.forEach((input) => {
+    const index = parseInt(input.dataset.index);
+    const field = input.dataset.field;
+    const newValue = parseFloat(input.value);
+
+    if (field === "length") {
+      if (newValue !== dataPoints[index].lengthValue) {
+        dataPoints[index].lengthValue = newValue;
+        // Recalculate length in meters
+        dataPoints[index].lengthMeters = convertToMeters(
+          newValue,
+          dataPoints[index].lengthUnit
+        );
+        hasChanges = true;
+      }
+    } else if (field === "time") {
+      if (newValue !== dataPoints[index].time) {
+        dataPoints[index].time = newValue;
+        hasChanges = true;
+      }
+    }
+  });
+
+  // Update oscillations if changed
+  if (newOscillations !== dataPoints[0].oscillations) {
+    dataPoints.forEach((point) => {
+      point.oscillations = newOscillations;
+    });
+    hasChanges = true;
+  }
+
+  // Update unit if changed (this requires recalculating length in meters for all points)
+  if (newUnit !== dataPoints[0].lengthUnit) {
+    dataPoints.forEach((point) => {
+      point.lengthUnit = newUnit;
+      // Recalculate length in meters with new unit
+      point.lengthMeters = convertToMeters(point.lengthValue, newUnit);
+    });
+    hasChanges = true;
+  }
+
+  // Recalculate all derived values (period, T², g)
+  dataPoints.forEach((point) => {
+    point.period = point.time / point.oscillations;
+    point.periodSquared = point.period * point.period;
+    point.g =
+      (4 * Math.PI * Math.PI * point.lengthMeters) / point.periodSquared;
+  });
+
+  // Exit edit mode
+  isEditMode = false;
+  editModeControls.style.display = "none";
+
+  // Edit button stays enabled (can always edit if we have data)
+  if (dataPoints.length > 0) {
+    editDataBtn.disabled = false;
+  }
+  editDataBtn.textContent = "✏️ Edit Data";
+
+  // Update table display
+  updateTable();
+
+  // If graph was generated and data changed, re-enable graph buttons
+  if (graphGenerated && hasChanges) {
+    generateGraphBtn.disabled = false;
+    generateGraphBtn.disabled = false;
+    // Hide graph/results until regenerated
+    graphSection.style.display = "none";
+    summarySection.style.display = "none";
+    copyableResultsSection.style.display = "none";
+    if (myChart !== null) {
+      myChart.destroy();
+      myChart = null;
+    }
+    graphGenerated = false;
+  }
+
+  console.log("Data updated", hasChanges ? "(changes detected)" : "");
 }
 
 // ========================================
@@ -219,11 +459,15 @@ function deleteDataPoint(index) {
 function clearAllData() {
   if (confirm("Clear all data? This cannot be undone!")) {
     dataPoints = [];
+    isEditMode = false;
+    graphGenerated = false;
     updateTable();
 
     // Hide graphs and results
     graphSection.style.display = "none";
     summarySection.style.display = "none";
+    copyableResultsSection.style.display = "none";
+    editModeControls.style.display = "none";
 
     if (myChart !== null) {
       myChart.destroy();
@@ -231,6 +475,12 @@ function clearAllData() {
     }
 
     generateGraphBtn.disabled = true;
+    editDataBtn.disabled = true;
+    editDataBtn.textContent = "✏️ Edit Data";
+
+    // Clear bulk entry fields
+    lengthColumnInput.value = "";
+    timeColumnInput.value = "";
   }
 }
 
@@ -238,12 +488,24 @@ function clearAllData() {
 // GENERATE GRAPH AND RESULTS
 // ========================================
 function generateGraph() {
+  // Mark that graph has been generated
+  graphGenerated = true;
+
+  // Keep edit button enabled (user can still edit data)
+  // Disable generate graph buttons (grayed out until data is edited or added)
+  generateGraphBtn.disabled = true;
+  generateGraphBtn.disabled = true;
+
   // Show sections
   graphSection.style.display = "block";
   summarySection.style.display = "block";
+  copyableResultsSection.style.display = "block";
 
-  // Smooth scroll to graph
-  graphSection.scrollIntoView({ behavior: "smooth", block: "start" });
+  // Populate copyable results table
+  updateCopyableResultsTable();
+
+  // Smooth scroll to summary (results appear first)
+  summarySection.scrollIntoView({ behavior: "smooth", block: "start" });
 
   // Prepare data for Chart.js: T² vs L (in meters)
   const chartData = dataPoints.map((point) => ({
@@ -267,6 +529,12 @@ function generateGraph() {
     { x: maxX, y: regression.slope * maxX + regression.intercept },
   ];
 
+  // Format equation for legend
+  const equation = `T² = ${formatNumber(regression.slope, 4)}L + ${formatNumber(
+    regression.intercept,
+    4
+  )}`;
+
   // Create the chart
   const ctx = document.getElementById("dataChart").getContext("2d");
   myChart = new Chart(ctx, {
@@ -283,7 +551,7 @@ function generateGraph() {
           pointHoverRadius: 8,
         },
         {
-          label: "Best Fit Line",
+          label: `Best Fit Line (${equation})`,
           data: regressionLine,
           type: "line",
           borderColor: "rgba(244, 67, 54, 0.8)",
@@ -297,6 +565,7 @@ function generateGraph() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      backgroundColor: "white",
       plugins: {
         title: {
           display: true,
@@ -466,10 +735,191 @@ function displaySummaryResults(regression) {
 }
 
 // ========================================
+// COPYABLE RESULTS TABLE
+// ========================================
+function updateCopyableResultsTable() {
+  copyableResultsTableBody.innerHTML = "";
+
+  dataPoints.forEach((point) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${formatNumber(point.lengthMeters, 3)}</td>
+      <td>${formatNumber(point.period, 3)}</td>
+      <td>${formatNumber(point.periodSquared, 4)}</td>
+      <td>${formatNumber(point.g, 2)}</td>
+    `;
+    copyableResultsTableBody.appendChild(row);
+  });
+}
+
+// ========================================
+// COPY RESULTS FUNCTIONALITY
+// ========================================
+function copyResultsTable() {
+  let textToCopy = "Pendulum Lab Results\n";
+  textToCopy += "=".repeat(50) + "\n\n";
+  textToCopy += "Length (m)\tPeriod T (s)\tT² (s²)\tg (m/s²)\n";
+  textToCopy += "-".repeat(50) + "\n";
+
+  dataPoints.forEach((point) => {
+    textToCopy += `${formatNumber(point.lengthMeters, 3)}\t${formatNumber(
+      point.period,
+      3
+    )}\t${formatNumber(point.periodSquared, 4)}\t${formatNumber(point.g, 2)}\n`;
+  });
+
+  // Calculate mean g value
+  const gValues = dataPoints.map((p) => p.g);
+  const avgG = gValues.reduce((a, b) => a + b, 0) / gValues.length;
+
+  textToCopy += "\n" + "=".repeat(50) + "\n";
+  textToCopy += `Mean g value: ${formatNumber(avgG, 2)} m/s²\n`;
+
+  // Copy to clipboard
+  navigator.clipboard
+    .writeText(textToCopy)
+    .then(() => {
+      showCopyStatus(
+        copyStatus,
+        "✓ Successfully copied results table to clipboard!",
+        "success"
+      );
+    })
+    .catch((err) => {
+      console.error("Failed to copy:", err);
+      showCopyStatus(
+        copyStatus,
+        "Failed to copy to clipboard. Please try again.",
+        "error"
+      );
+    });
+}
+
+function copyGraphData() {
+  // Get regression data
+  const chartData = dataPoints.map((point) => ({
+    x: point.lengthMeters,
+    y: point.periodSquared,
+  }));
+  const regression = calculateLinearRegression(chartData);
+
+  let textToCopy = "T² vs Length Data (for Excel)\n";
+  textToCopy += "=".repeat(50) + "\n\n";
+  textToCopy += "Length (m)\tT² (s²)\n";
+  textToCopy += "-".repeat(50) + "\n";
+
+  // Copy data points
+  dataPoints.forEach((point) => {
+    textToCopy += `${formatNumber(point.lengthMeters, 6)}\t${formatNumber(
+      point.periodSquared,
+      6
+    )}\n`;
+  });
+
+  // Add linear regression summary
+  textToCopy += "\n" + "=".repeat(50) + "\n";
+  textToCopy += "Linear Regression Analysis\n";
+  textToCopy += "-".repeat(50) + "\n";
+  textToCopy += `Equation: T² = ${formatNumber(
+    regression.slope,
+    4
+  )}L + ${formatNumber(regression.intercept, 4)}\n`;
+  textToCopy += `Slope: ${formatNumber(regression.slope, 4)} s²/m\n`;
+  textToCopy += `Intercept: ${formatNumber(regression.intercept, 4)} s²\n`;
+  textToCopy += `R² Value: ${formatNumber(regression.rSquared, 4)}\n`;
+  textToCopy += `g from slope: ${formatNumber(
+    regression.gFromSlope,
+    2
+  )} m/s²\n`;
+
+  // Copy to clipboard
+  navigator.clipboard
+    .writeText(textToCopy)
+    .then(() => {
+      showCopyStatus(
+        copyGraphStatus,
+        "✓ Successfully copied graph data to clipboard!",
+        "success"
+      );
+    })
+    .catch((err) => {
+      console.error("Failed to copy:", err);
+      showCopyStatus(
+        copyGraphStatus,
+        "Failed to copy to clipboard. Please try again.",
+        "error"
+      );
+    });
+}
+
+function showCopyStatus(element, message, type) {
+  element.textContent = message;
+  element.className = `copy-status ${type}`;
+  element.style.display = "block";
+
+  // Hide after 3 seconds
+  setTimeout(() => {
+    element.style.display = "none";
+  }, 3000);
+}
+
+// ========================================
+// DOWNLOAD GRAPH AS IMAGE
+// ========================================
+function downloadGraph() {
+  if (myChart === null) {
+    showCopyStatus(copyGraphStatus, "No graph available to download.", "error");
+    return;
+  }
+
+  // Get the canvas element
+  const canvas = document.getElementById("dataChart");
+
+  // Create a new canvas with white background
+  const downloadCanvas = document.createElement("canvas");
+  downloadCanvas.width = canvas.width;
+  downloadCanvas.height = canvas.height;
+  const ctx = downloadCanvas.getContext("2d");
+
+  // Fill with white background
+  ctx.fillStyle = "white";
+  ctx.fillRect(0, 0, downloadCanvas.width, downloadCanvas.height);
+
+  // Draw the original chart on top
+  ctx.drawImage(canvas, 0, 0);
+
+  // Convert canvas to blob
+  downloadCanvas.toBlob((blob) => {
+    // Create a download link
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+
+    // Generate filename with timestamp
+    const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, "-");
+    link.download = `pendulum-graph-${timestamp}.png`;
+
+    // Trigger download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Clean up the URL
+    setTimeout(() => URL.revokeObjectURL(url), 100);
+
+    showCopyStatus(
+      copyGraphStatus,
+      "✓ Graph downloaded successfully!",
+      "success"
+    );
+  }, "image/png");
+}
+
+// ========================================
 // INITIALIZATION
 // ========================================
 
 console.log("Pendulum Lab - Measure g - Enhanced version loaded!");
 console.log(
-  "Phase 2A features: Unit conversion, oscillations input, live period preview"
+  "Phase 2A features: Unit conversion, oscillations input, live period preview, bulk paste, copyable results"
 );

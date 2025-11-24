@@ -767,3 +767,303 @@ body {
   color: white;
   font-weight: 600;
 }
+
+/* ========================================
+   ENTRY MODE TOGGLE
+   ======================================== */
+
+.entry-mode-toggle {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  background: #f0f0f0;
+  padding: 0.5rem;
+  border-radius: 12px;
+  width: fit-content;
+}
+
+.mode-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: transparent;
+  color: #666;
+}
+
+.mode-btn:hover {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+}
+
+.mode-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+/* ========================================
+   BULK ENTRY STYLES
+   ======================================== */
+
+.bulk-entry-instructions {
+  background: #e3f2fd;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid #667eea;
+}
+
+.bulk-entry-instructions p {
+  margin: 0;
+  color: #333;
+  line-height: 1.6;
+}
+
+.bulk-input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.bulk-input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.bulk-input-group label {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.bulk-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: "Courier New", monospace;
+  resize: vertical;
+  min-height: 150px;
+  transition: border-color 0.3s;
+  line-height: 1.6;
+}
+
+.bulk-textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.bulk-oscillations-row {
+  margin-bottom: 1.5rem;
+}
+
+.bulk-oscillations-row .input-group {
+  max-width: 300px;
+}
+
+/* Responsive adjustments for bulk entry */
+@media (max-width: 768px) {
+  .bulk-input-row {
+    grid-template-columns: 1fr;
+  }
+
+  .entry-mode-toggle {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .mode-btn {
+    flex: 1;
+  }
+}
+
+/* ========================================
+   EDIT MODE STYLES
+   ======================================== */
+
+.card-header-with-edit {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.btn-edit {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.btn-edit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-edit:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  box-shadow: none;
+  opacity: 0.6;
+}
+
+.edit-mode-controls {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  border: 2px solid #667eea;
+}
+
+.edit-global-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.edit-oscillations-control,
+.edit-unit-control {
+  display: flex;
+  flex-direction: column;
+}
+
+.edit-oscillations-control label,
+.edit-unit-control label {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .edit-global-controls {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+.edit-input-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.edit-input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: border-color 0.3s;
+}
+
+.edit-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.edit-unit {
+  color: #666;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  min-width: 30px;
+}
+
+/* ========================================
+   COPYABLE RESULTS TABLE STYLES
+   ======================================== */
+
+.card-header-with-copy {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.graph-action-buttons {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.copyable-table-container {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+.copyable-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.copyable-table thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.copyable-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.copyable-table td {
+  padding: 0.75rem 1rem;
+  border: 1px solid #e0e0e0;
+  text-align: left;
+}
+
+.copyable-table tbody tr:nth-child(even) {
+  background: #f8f9fa;
+}
+
+.copyable-table tbody tr:hover {
+  background: #f0f0ff;
+}
+
+.copy-status {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.copy-status.success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #4caf50;
+}
+
+.copy-status.error {
+  background: #ffebee;
+  color: #c62828;
+  border: 1px solid #f44336;
+}
+
+@media (max-width: 768px) {
+  .card-header-with-copy {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Measure g - Pendulum Lab | LabHacker</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <!-- Chart.js for graphing -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  </head>
+
+  <body>
+    <!-- NAVIGATION BAR -->
+    <nav class="navbar">
+      <div class="nav-content">
+        <a href="index.html" style="text-decoration: none">
+          <h1 class="logo">LabHacker.ai</h1>
+        </a>
+
+        <div class="nav-tabs">
+          <span class="tab">Physics</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="container">
+      <!-- BREADCRUMB -->
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="breadcrumb-separator">›</span>
+        <a href="pendulum-hub.html">Pendulum Lab</a>
+        <span class="breadcrumb-separator">›</span>
+        <span class="breadcrumb-current">Measure g</span>
+      </div>
+
+      <!-- PAGE HEADER -->
+      <div class="page-header">
+        <h1>⚖️ Measure Gravitational Acceleration (g)</h1>
+        <p>
+          Calculate g using pendulum period measurements at different lengths
+        </p>
+      </div>
+
+      <!-- INPUT SECTION -->
+      <div class="tool-card">
+        <h2 class="card-title">Enter Your Measurements</h2>
+
+        <div class="instructions">
+          <p>
+            <strong>What we're doing:</strong> We're using the simple pendulum
+            equation <strong>T = 2π√(L/g)</strong> to find gravitational
+            acceleration (g). By measuring the period (T) at different lengths
+            (L), we can rearrange the equation to <strong>g = 4π²L/T²</strong>.
+            We'll plot T² vs L to create a linear relationship and use linear
+            regression to find g from the slope.
+          </p>
+          <p>
+            <strong>Instructions:</strong> For each pendulum length, measure the
+            time for multiple oscillations, then enter the data below.
+          </p>
+          <ol>
+            <li>Set the pendulum to a specific length</li>
+            <li>Release from a small angle (&lt;15°)</li>
+            <li>Time how long it takes for 10-20 complete oscillations</li>
+            <li>Enter the length, time, and number of oscillations</li>
+            <li>Click "Add Data Point" and repeat for different lengths</li>
+            <li>Generate graph when you have at least 3 data points</li>
+          </ol>
+        </div>
+
+        <!-- DATA ENTRY SECTION -->
+        <div id="dataEntrySection" class="input-section">
+          <div class="bulk-entry-instructions">
+            <p>
+              <strong>📋 Enter or paste your data:</strong> You can type values
+              one at a time or paste entire columns from your spreadsheet or lab
+              notebook. Each value should be on a new line when pasting.
+            </p>
+          </div>
+
+          <div class="bulk-input-row">
+            <!-- Length Column -->
+            <div class="bulk-input-group">
+              <label for="lengthColumnInput">Pendulum Length</label>
+              <div class="input-with-unit">
+                <textarea
+                  id="lengthColumnInput"
+                  class="bulk-textarea"
+                  placeholder="Enter or paste length values here, one per line:&#10;0.50&#10;0.60&#10;0.70&#10;0.80"
+                  rows="8"
+                ></textarea>
+                <select id="lengthUnit" class="unit-dropdown">
+                  <option value="cm">cm</option>
+                  <option value="m" selected>m</option>
+                  <option value="in">in</option>
+                </select>
+              </div>
+              <span class="input-hint">One value per line</span>
+            </div>
+
+            <!-- Time Column -->
+            <div class="bulk-input-group">
+              <label for="timeColumnInput">Total Time</label>
+              <div class="input-with-unit">
+                <textarea
+                  id="timeColumnInput"
+                  class="bulk-textarea"
+                  placeholder="Enter or paste time values here, one per line:&#10;14.2&#10;15.5&#10;16.8&#10;18.0"
+                  rows="8"
+                ></textarea>
+                <span class="unit-label">seconds</span>
+              </div>
+              <span class="input-hint">One value per line</span>
+            </div>
+          </div>
+
+          <!-- Oscillations (applies to all data) -->
+          <div class="bulk-oscillations-row">
+            <div class="input-group">
+              <label for="oscillationsInput"
+                >Number of Oscillations (applies to all data points)</label
+              >
+              <select id="oscillationsInput" class="oscillations-dropdown">
+                <option value="5">5</option>
+                <option value="10" selected>10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+                <option value="25">25</option>
+                <option value="30">30</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="button-group">
+            <button id="addDataBtn" class="btn-primary">
+              Add All Data Points
+            </button>
+            <button id="generateGraphBtn" class="btn-primary" disabled>
+              Generate Graph & Results
+            </button>
+            <button id="clearDataBtn" class="btn-secondary">
+              Clear All Data
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- DATA TABLE SECTION -->
+      <div class="tool-card">
+        <div class="card-header-with-edit">
+          <h2 class="card-title">Your Data</h2>
+          <button id="editDataBtn" class="btn-edit" disabled>
+            ✏️ Edit Data
+          </button>
+        </div>
+        <div
+          id="editModeControls"
+          class="edit-mode-controls"
+          style="display: none"
+        >
+          <div class="edit-global-controls">
+            <div class="edit-oscillations-control">
+              <label for="editOscillationsInput"
+                >Number of Oscillations (applies to all data points):</label
+              >
+              <select id="editOscillationsInput" class="oscillations-dropdown">
+                <option value="5">5</option>
+                <option value="10" selected>10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+                <option value="25">25</option>
+                <option value="30">30</option>
+              </select>
+            </div>
+            <div class="edit-unit-control">
+              <label for="editUnitInput"
+                >Length Unit (applies to all data points):</label
+              >
+              <select id="editUnitInput" class="unit-dropdown">
+                <option value="cm">cm</option>
+                <option value="m" selected>m</option>
+                <option value="in">in</option>
+              </select>
+            </div>
+          </div>
+          <div class="button-group">
+            <button id="saveEditBtn" class="btn-primary">
+              💾 Save Changes
+            </button>
+            <button id="cancelEditBtn" class="btn-secondary">❌ Cancel</button>
+          </div>
+        </div>
+        <div class="data-table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Length</th>
+                <th>Time (s)</th>
+                <th>Oscillations</th>
+                <th>Period T (s)</th>
+                <th>T² (s²)</th>
+                <th>g (m/s²)</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="dataTableBody">
+              <tr class="empty-state">
+                <td colspan="8">
+                  No data yet. Add your first measurement above! 👆
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SUMMARY SECTION (hidden until graph is generated) -->
+      <div id="summarySection" class="tool-card" style="display: none">
+        <h2 class="card-title">Results Summary</h2>
+
+        <div class="results-grid">
+          <div class="result-card">
+            <div class="result-label">Average g (from individual points)</div>
+            <div class="result-value" id="avgG">0.00</div>
+            <div class="result-unit">m/s²</div>
+          </div>
+
+          <div class="result-card">
+            <div class="result-label">Standard Deviation</div>
+            <div class="result-value" id="stdDev">0.00</div>
+            <div class="result-unit">m/s²</div>
+          </div>
+
+          <div class="result-card">
+            <div class="result-label">g from Best Fit Line</div>
+            <div class="result-value" id="gFromSlope">0.00</div>
+            <div class="result-unit">m/s²</div>
+          </div>
+
+          <div class="result-card">
+            <div class="result-label">Percent Error</div>
+            <div class="result-value" id="percentError">0.0</div>
+            <div class="result-unit">%</div>
+          </div>
+        </div>
+
+        <!-- Quality Assessment -->
+        <div id="qualityAssessment" class="quality-assessment"></div>
+      </div>
+
+      <!-- COPYABLE RESULTS TABLE SECTION (hidden until graph is generated) -->
+      <div id="copyableResultsSection" class="tool-card" style="display: none">
+        <div class="card-header-with-copy">
+          <h2 class="card-title">Copyable Results Table</h2>
+          <button id="copyResultsTableBtn" class="btn-primary">
+            📋 Copy Results
+          </button>
+        </div>
+        <div class="copyable-table-container">
+          <table id="copyableResultsTable" class="copyable-table">
+            <thead>
+              <tr>
+                <th>Length (m)</th>
+                <th>Period T (s)</th>
+                <th>T² (s²)</th>
+                <th>g (m/s²)</th>
+              </tr>
+            </thead>
+            <tbody id="copyableResultsTableBody"></tbody>
+          </table>
+        </div>
+        <div id="copyStatus" class="copy-status" style="display: none"></div>
+      </div>
+
+      <!-- GRAPH SECTION (hidden until graph is generated) -->
+      <div id="graphSection" class="tool-card" style="display: none">
+        <div class="card-header-with-copy">
+          <h2 class="card-title">T² vs Length Graph</h2>
+          <div class="graph-action-buttons">
+            <button id="copyGraphDataBtn" class="btn-primary">
+              📋 Copy Results
+            </button>
+            <button id="downloadGraphBtn" class="btn-primary">
+              📥 Download Graph
+            </button>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="dataChart"></canvas>
+        </div>
+
+        <!-- Regression Results -->
+        <div id="regressionResults" class="results-box"></div>
+        <div
+          id="copyGraphStatus"
+          class="copy-status"
+          style="display: none"
+        ></div>
+      </div>
+    </main>
+
+    <!-- Load JavaScript -->
+    <script src="js/pendulum.js"></script>
+  </body>
+</html>
